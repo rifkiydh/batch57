@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Proyek Saya</title>
+    <link rel="stylesheet" href="/week1/assets/css/project.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
+      integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+  </head>
+  <body>
+    <nav>
+      <div class="left">
+        <ul>
+          <li><a href="./index.html">Home</a></li>
+          <li><a href="#" style="color: black">My Project</a></li>
+        </ul>
+      </div>
+
+      <div class="right">
+        <a href="/week1/contact.html">Contact Me</a>
+      </div>
+    </nav>
+
+    <!-- projeck -->
+
+    <div class="container">
+      <section class="add-project">
+        <h2 style="text-align: center; font-weight: 900; margin-bottom: 50px; margin-top: 50px">ADD MY PROJECK</h2>
+        <form id="form-reset" onsubmit="addBlog(event)">
+          <label for="projectName">Nama Proyek</label>
+          <input type="text" id="projectName" name="projectName" required />
+
+          <div class="awal-akhir">
+            <div class="start-date">
+              <label for="startDate">Tanggal Mulai</label>
+              <br />
+              <input type="date" id="startDate" name="startDate" required />
+            </div>
+            <div class="and-date">
+              <label for="endDate">Tanggal Selesai</label><br />
+              <input type="date" id="endDate" name="endDate" required />
+            </div>
+          </div>
+
+          <label for="description">Deskripsi</label>
+          <textarea id="description" name="description" required></textarea>
+          <h1 style="font-weight: 900">technologi</h1>
+          <div class="technologi">
+            <div class="tech-checkboxes" value="Node Js">
+              <label> <input type="checkbox"">node.js </label>
+              <br />
+              <label> <input type="checkbox" value="react Js" />react.js </label>
+            </div>
+            <div>
+              <label> <input type="checkbox" value="next Js" />next.js </label>
+              <br />
+              <label> <input type="checkbox" value="typeScript" />typescript </label>
+            </div>
+          </div>
+          <label for="image">Unggah Gambar</label>
+          <input type="file" id="image" name="image" required />
+          <div><button type="submit">Submit</button></div>
+        </form>
+      </section>
+    </div>
+
+    <section class="my-projects" style="margin-top: 50px">
+      <h2 style="text-align: center; background-color: #ffffff; font-weight: 900; margin-bottom: 50px">MY PROJECT</h2>
+      <div id="projectsContainer" style="margin: auto; background-color: #ffffff"></div>
+    </section>
+
+    <script src="/week1/assets/js/project.js"></script>
+  </body>
+</html>
