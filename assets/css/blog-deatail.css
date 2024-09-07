@@ -1,0 +1,88 @@
+.page-style {
+  padding-bottom: 50px;
+}
+
+.title {
+  margin-top: 50px;
+  text-align: center;
+  text-transform: uppercase;
+  font-weight: 1000;
+  font-size: 45px;
+}
+
+.container {
+  padding-bottom: 50px;
+  display: flex;
+}
+
+.project-image {
+  width: 70%;
+  height: 20%;
+  display: block;
+  margin-top: 40px;
+  margin-left: 100px;
+}
+
+.detail {
+  margin: 30px 50px;
+}
+
+.duration {
+  font-size: 25px;
+  font-weight: bold;
+}
+
+.flex-icon {
+  display: flex;
+  margin-top: 20px;
+}
+
+.flex-icon img {
+  display: block;
+  width: 40px;
+  height: 40px;
+}
+
+.flex-icon p {
+  margin: auto;
+  margin-left: 20px;
+  font-size: 18px;
+}
+
+.technology {
+  margin-top: 50px;
+  font-size: 25px;
+  font-weight: bold;
+}
+
+.flex-check {
+  display: flex;
+  flex-direction: column;
+  margin-top: -20px;
+}
+
+.flex-check .flex-box {
+  display: flex;
+  margin-right: 30%;
+  margin-top: 20px;
+}
+
+.flex-check .flex-box label {
+  justify-content: center;
+  display: flex;
+  width: 50%;
+  margin-top: 5px;
+  font-size: 18px;
+}
+
+.flex-check .flex-box img {
+  display: flex;
+  width: 8%;
+  padding-right: 8%;
+}
+
+.description {
+  width: 79%;
+  text-align: justify;
+  margin-left: 100px;
+}
