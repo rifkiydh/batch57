@@ -36,7 +36,7 @@ function renderBlog() {
   document.getElementById("projectContainer").innerHTML = "";
   for (let i = 0; i < dataBlog.length; i++) {
     document.getElementById("projectContainer").innerHTML += `
-    <div class="card mb-3">
+  <div class="card mb-3">
     <div class="row g-0">
       <div class="col-lg-4"><img src="${dataBlog[i].image}" class="img-fluid rounded-start h-100" alt="RIFKIYDH" /></div>
       <div class="col-md-8">
