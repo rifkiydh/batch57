@@ -3,16 +3,19 @@ const app = express();
 const port = 5000;
 const path = require("path");
 const bcrypt = require("bcrypt");
-const { password } = require("pg/lib/defaults");
-const { where } = require("sequelize");
-var session = require("express-session");
-const cookie = require("express-session/session/cookie");
+const session = require("express-session");
 const flash = require("express-flash");
+const config = require("./config/config");
+const { Sequelize, QueryTypes } = require("sequelize");
+const sequelize = new Sequelize(config.development);
+const upload = require("./middlewares/upload-file");
+const { isDate, parseISO, differenceInDays, formatDistance } = require("date-fns");
+const hbs = require("hbs");
 
-// const config = require("./config/config");
-// const { Sequelize, QueryTypes, where } = require("sequelize");
+// const { password } = require("pg/lib/defaults");
+// const { where } = require("sequelize");
 // const { start } = require("repl");
-// const sequelize = new Sequelize(config.development);
+// const cookie = require("express-session/session/cookie");
 
 const blogModel = require("./models").blogs;
 const userModel = require("./models").User;
@@ -20,8 +23,13 @@ const userModel = require("./models").User;
 app.set("view engine", "hbs");
 app.set("views", path.join(__dirname, "./views"));
 
+hbs.registerHelper("eq", function (a, b) {
+  return a === b;
+});
+
 app.use("/assets", express.static(path.join(__dirname, "./assets")));
 app.use("/img", express.static(path.join(__dirname, "./img")));
+app.use("/uploads", express.static(path.join(__dirname, "./uploads")));
 
 app.use(express.urlencoded({ extended: true }));
 app.use(
@@ -47,12 +55,13 @@ app.get("/blog", blog);
 app.get("/testimonial", testimonial);
 app.get("/contact", contact);
 app.get("/detail/:blog_id", Detail);
-app.post("/blog", addBlog);
+app.post("/blog", upload.single("image"), addBlog);
 app.get("/edit-blog/:blog_id", renderEditBlog);
-app.post("/edit-blog/:blog_id", editBlog);
+app.post("/edit-blog/:blog_id", upload.single("image"), editBlog);
 app.get("/delete-blog/:blog_id", deleteBlog);
+app.get("/logout", logout);
 
-app.get("/logout", (req, res) => {
+function logout(req, res) {
   req.session.destroy((err) => {
     if (err) {
       req.flash("error", "Terjadi kesalahan. Silakan coba lagi.");
@@ -60,8 +69,7 @@ app.get("/logout", (req, res) => {
     }
     res.redirect("/login");
   });
-});
-
+}
 async function addRegister(req, res) {
   try {
     const { name, email, password } = req.body;
@@ -108,6 +116,7 @@ async function addLogin(req, res) {
     }
 
     req.session.user = user;
+    console.log("User logged in:", user);
     req.flash("succes", "Berhasil Login");
     res.redirect("/");
   } catch (error) {
@@ -133,10 +142,6 @@ async function deleteBlog(req, res) {
     },
   });
   res.redirect("/");
-  // const id = req.params.blog_id;
-  // const index = blogs.findIndex((blog) => blog.id == id);
-  // blogs.splice(index, 1);
-  // res.redirect("/");
 }
 async function editBlog(req, res) {
   const { blog_id } = req.params;
@@ -160,27 +165,15 @@ async function editBlog(req, res) {
   blog.java = java;
   blog.author = "rifki yudha";
 
+  if (req.file) {
+    console.log("File diunggah:", req.file);
+    blog.image = req.file.path; // Update image path if new file is uploaded
+  } else {
+    console.log("Tidak ada file yang diunggah");
+  }
   await blog.save();
 
   res.redirect("/");
-  // const id = req.params.blog_id;
-  // const newBlog = {
-  //   id: id,
-  //   title: req.body.title,
-  //   startDate: req.body.startDate,
-  //   endDate: req.body.endDate,
-  //   content: req.body.content,
-  //   nodeJs: req.body.nodeJs,
-  //   reactJs: req.body.reactJs,
-  //   php: req.body.php,
-  //   java: req.body.java,
-  //   createdAt: new Date(),
-  //   author: "rifki yudha",
-  //   image: "https://th.bing.com/th/id/OIP.3z76z4KZtcQOww5gkqeeMgHaFz?rs=1&pid=ImgDetMain",
-  // };
-  // const index = blogs.findIndex((blog) => blog.id == id);
-  // blogs[index] = newBlog;
-  // res.redirect("/");
 }
 async function renderEditBlog(req, res) {
   const { blog_id } = req.params;
@@ -194,51 +187,111 @@ async function renderEditBlog(req, res) {
   if (!result) return res.render("not-found");
 
   res.render("edit-blog", { data: result });
-  // const id = req.params.blog_id;
-  // const blog = blogs.find((blog) => blog.id == id);
-
-  // res.render("edit-blog", {
-  //   data: blog,
-  // });
 }
+
+// Di dalam fungsi addBlog
 async function addBlog(req, res) {
+  try {
+    const { title, content, startDate, endDate, nodeJs, reactJs, php, java } = req.body;
+
+    // Validasi tanggal
+    if (!isDate(parseISO(startDate)) || !isDate(parseISO(endDate))) {
+      req.flash("error", "Tanggal tidak valid!");
+      return res.redirect("/blog");
+    }
+
+    // Menghitung durasi deskriptif
+    const start = parseISO(startDate);
+    const end = parseISO(endDate);
+    const duration = formatDistance(start, end, { addSuffix: false });
+
+    const imagePath = req.file?.path; // Pastikan file diupload
+    if (!imagePath) {
+      req.flash("error", "Gambar tidak diunggah.");
+      return res.redirect("/blog");
+    }
+
+    const userId = req.session.user?.id;
+    if (!userId) {
+      req.flash("error", "Anda harus login terlebih dahulu.");
+      return res.redirect("/login");
+    }
+
+    await blogModel.create({
+      title: title,
+      content: content,
+      start_date: startDate,
+      end_date: endDate,
+      node_js: nodeJs,
+      react_js: reactJs,
+      php: php,
+      java: java,
+      author: "rifki yudha",
+      image: imagePath,
+      userId: userId,
+      duration: duration,
+    });
+
+    res.redirect("/");
+  } catch (error) {
+    console.error("Error saat menambahkan blog:", error);
+    req.flash("error", "Terjadi kesalahan saat menambahkan blog.");
+    res.redirect("/blog");
+  }
+}
+
+// Lakukan hal yang sama di fungsi editBlog
+async function editBlog(req, res) {
+  const { blog_id } = req.params;
   const { title, content, startDate, endDate, nodeJs, reactJs, php, java } = req.body;
-  await blogModel.create({
-    title: title,
-    content: content,
-    start_date: startDate,
-    end_date: endDate,
-    node_js: nodeJs,
-    react_js: reactJs,
-    php: php,
-    java: java,
-    author: "rifki yudha",
-    image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTPeWWU4427WFoUfLn-QiJGLoiIllli8ez1Tw&s",
+
+  const blog = await blogModel.findOne({
+    where: {
+      id: blog_id,
+    },
   });
-  // const blog = {
-  //   id: blogs.length + 1,
-  //   title: req.body.title,
-  //   startDate: req.body.startDate,
-  //   endDate: req.body.endDate,
-  //   content: req.body.content,
-  //   nodeJs: req.body.nodeJs,
-  //   reactJs: req.body.reactJs,
-  //   php: req.body.php,
-  //   java: req.body.java,
-  //   createdAt: new Date(),
-  //   author: "rifki yudha",
-  //   image: "https://th.bing.com/th/id/OIP.3z76z4KZtcQOww5gkqeeMgHaFz?rs=1&pid=ImgDetMain",
-  // };
+
+  if (!blog) return res.render("not-found");
+
+  blog.title = title;
+  blog.content = content;
+  blog.start_date = startDate;
+  blog.end_date = endDate;
+  blog.node_js = nodeJs;
+  blog.react_js = reactJs;
+  blog.php = php;
+  blog.java = java;
+  blog.author = "rifki yudha";
+
+  // Menghitung durasi deskriptif
+  const start = parseISO(startDate);
+  const end = parseISO(endDate);
+  const duration = formatDistance(start, end, { addSuffix: false });
+  blog.duration = duration; // Update durasi
+
+  if (req.file) {
+    console.log("File diunggah:", req.file);
+    blog.image = req.file.path;
+  }
+
+  await blog.save();
 
   res.redirect("/");
 }
 async function index(req, res) {
-  // const result = await blogModel.findAll();
-  const user = req.session.user;
+  const query = `SELECT public.blogs.*, public."Users".name FROM public.blogs INNER JOIN public."Users"
+  ON public.blogs."userId" = public."Users".id;`;
+  const result = await sequelize.query(query, { type: QueryTypes.SELECT });
 
-  res.render("index", { user });
+  const user = req.session.user;
+  console.log("User from session:", user);
+  res.render("index", { data: result, user });
 }
 function blog(req, res) {
+  const user = req.session.user;
+  if (!user) {
+    return res.redirect("/login");
+  }
   res.render("blog");
 }
 function testimonial(req, res) {
@@ -247,33 +300,19 @@ function testimonial(req, res) {
 function contact(req, res) {
   res.render("contact");
 }
-// async function detail(req, res) {
-//   const id = req.params.blog_id;
-//   const result = await blogModel.findOne({
-//     where: {
-//       id: id,
-//     },
-//   });
-//   console.log("detail", result);
-//   if (!result) return res.render("not-found");
-//   res.render("detail", { data: result });
-//   // const blog = blogs.find((blog) => blog.id == id);
-//   // res.render("detail", {
-//   //   data: blog,
-//   // });
-// }
+
 async function Detail(req, res) {
   const { blog_id } = req.params;
   const result = await blogModel.findOne({
     where: {
       id: blog_id,
     },
+    include: [{ model: userModel, attributes: ["name"] }], // Menyertakan nama pengguna
   });
 
-  console.log("detail", result);
-
   if (!result) return res.render("not-found");
-  res.render("detail", { data: result });
+
+  res.render("detail", { data: result, user: req.session.user });
 }
 
 app.listen(port, () => {

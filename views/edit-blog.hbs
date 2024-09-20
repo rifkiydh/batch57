@@ -16,7 +16,7 @@
   <body class="bg-body-tertiary">
     <!-- FORM EDIT-PROJECT -->
     <H1 class="text-center">Edit Blog</H1>
-    <form id="form" action="/edit-blog/{{data.id}}" method="POST" class="container">
+    <form id="form" action="/edit-blog/{{data.id}}" method="POST" class="container" enctype="multipart/form-data">
       <div class="mb-4">
         <label for="name" class="form-label">Project Name</label>
         <input type="text" class="form-control border-3" id="name" aria-describedby="emailHelp" name="title" value="{{data.title}}" />
@@ -69,7 +69,7 @@
       <div class="mb-4">
         <label for="image">Upload Image</label>
         <div class="input-group">
-          <input type="file" class="form-control border-3" id="image" />
+          <input type="file" class="form-control border-3" id="image" id="input-blog-image" name="image" />
           <label class="input-group-text" for="inputGroupFile02"><i class="fa-solid fa-link fa-lg" name="image"></i></label>
         </div>
       </div>
