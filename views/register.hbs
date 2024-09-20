@@ -23,7 +23,7 @@
 
   <!-- FORM LOGIN -->
   <body class="">
-    <div class="container bg-body-tertiary w-50 border rounded-4 p-3" style="margin-top: 10%">
+    <div class="container bg-body-tertiary border rounded-4 p-3" style="margin-top: 10%; width: 500px;">
       {{#if messages.error}}
         <div class="alert alert-danger text-center" role="alert">
           {{messages.error}}
@@ -42,10 +42,10 @@
       </div>
       <div class="row">
         <div class="col">
-          <form action="/register" method="POST">
+          <form action="/register" method="POST" >
             <div class="mb-3">
               <label for="nama-lengkap" class="form-label">Nama Lengkap</label>
-              <input type="text" class="form-control" id="nama-lengkap" aria-describedby="emailHelp" name="name" required/>
+              <input type="text" class="form-control " id="nama-lengkap" aria-describedby="emailHelp" name="name" required/>
             </div>
             <div class="mb-3">
               <label for="exampleInputEmail1" class="form-label">Email address</label>
