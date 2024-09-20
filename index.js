@@ -1,22 +1,21 @@
 const express = require("express");
 const app = express();
-const port = 5000;
 const path = require("path");
 const bcrypt = require("bcrypt");
 const session = require("express-session");
 const flash = require("express-flash");
-const config = require("./config/config");
 const { Sequelize, QueryTypes } = require("sequelize");
-const sequelize = new Sequelize(config.development);
 const upload = require("./middlewares/upload-file");
 const { isDate, parseISO, differenceInDays, formatDistance } = require("date-fns");
 const hbs = require("hbs");
+const config = require("./config/config.js");
 
-// const { password } = require("pg/lib/defaults");
-// const { where } = require("sequelize");
-// const { start } = require("repl");
-// const cookie = require("express-session/session/cookie");
+require("dotenv").config();
+const port = process.env.PORT || 5000;
 
+const envConfig = process.env.NODE_ENV === "production" ? config.production : config.development;
+
+const sequelize = new Sequelize({ ...envConfig, dialectModule: require("pg") });
 const blogModel = require("./models").blogs;
 const userModel = require("./models").User;
 
