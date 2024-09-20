@@ -231,7 +231,10 @@ async function addBlog(req, res) {
       userId: userId,
       duration: duration,
     });
-
+    if (!image) {
+      req.flash("eror", "your image blank");
+      res.redirect("/blog");
+    }
     res.redirect("/");
   } catch (error) {
     console.error("Error saat menambahkan blog:", error);

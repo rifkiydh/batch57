@@ -44,26 +44,31 @@
 
     <!-- FORM PROJECT -->
     <form id="form" action="/blog" method="POST" class="container" enctype="multipart/form-data">
+      {{#if messages.error}}
+        <div class="alert alert-danger text-center" role="alert">
+          {{messages.error}}
+        </div>
+      {{/if}}
       <div class="mb-4">
         <label for="name" class="form-label">Project Name</label>
-        <input type="text" class="form-control border-3" id="name" aria-describedby="emailHelp" name="title" />
+        <input type="text" class="form-control border-3" id="name" aria-describedby="emailHelp" name="title" required />
       </div>
 
       <div class="row mb-4">
         <div class="col-12 col-md-6 mb-3 mb-md-0">
           <label for="start-date" class="start-date">Start Date</label>
-          <input type="date" class="form-control border-3" id="start-date" name="startDate" />
+          <input type="date" class="form-control border-3" id="start-date" name="startDate" required />
         </div>
         <div class="col-12 col-md-6">
           <label for="and-date">End Date</label>
-          <input type="date" class="form-control border-3" id="and-date" name="endDate" />
+          <input type="date" class="form-control border-3" id="and-date" name="endDate" required />
         </div>
       </div>
 
       <div class="mb-4">
         <label for="deskripsi">Deskripsi</label>
         <div class="form-floating">
-          <textarea class="form-control border-3" placeholder="Leave a comment here" id="deskripsi" style="height: 100px" name="content"></textarea>
+          <textarea class="form-control border-3" placeholder="Leave a comment here" id="deskripsi" style="height: 100px" name="content" required></textarea>
         </div>
       </div>
 
@@ -72,21 +77,21 @@
         <div class="row">
           <div class="col-12 col-md-6 mb-3 mb-md-0">
             <div class="form-check">
-              <input class="form-check-input border-3" type="checkbox" value="NodeJs" id="nodejs" name="nodeJs" checked />
+              <input class="form-check-input border-3" type="checkbox" value="NodeJs" id="nodejs" name="nodeJs" checked required />
               <label class="form-check-label" for="nodejs">Node Js</label>
             </div>
             <div class="form-check">
-              <input class="form-check-input border-3" type="checkbox" value="React Js" id="reactjs" name="reactJs" checked />
+              <input class="form-check-input border-3" type="checkbox" value="React Js" id="reactjs" name="reactJs" checked required />
               <label class="form-check-label" for="reactjs">React Js</label>
             </div>
           </div>
           <div class="col-12 col-md-6">
             <div class="form-check">
-              <input class="form-check-input border-3" type="checkbox" value="Php" id="php" name="php" checked />
+              <input class="form-check-input border-3" type="checkbox" value="Php" id="php" name="php" checked required />
               <label class="form-check-label" for="php">Php</label>
             </div>
             <div class="form-check">
-              <input class="form-check-input border-3" type="checkbox" value="Java" id="java" name="java" checked />
+              <input class="form-check-input border-3" type="checkbox" value="Java" id="java" name="java" checked required />
               <label class="form-check-label" for="java">Java</label>
             </div>
           </div>
